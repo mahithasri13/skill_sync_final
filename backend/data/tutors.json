@@ -1,0 +1,32 @@
+[
+  {
+    "_id": "1",
+    "name": "Dr. Sarah Johnson",
+    "email": "sarah.johnson@skillsync.com",
+    "subject": "Mathematics",
+    "experience": 8,
+    "rating": 4.8,
+    "bio": "Expert in Advanced Mathematics and Calculus with 8 years of teaching experience.",
+    "profileImage": "assets/tutor1.jpg"
+  },
+  {
+    "_id": "2", 
+    "name": "Prof. Michael Chen",
+    "email": "michael.chen@skillsync.com",
+    "subject": "Physics",
+    "experience": 6,
+    "rating": 4.7,
+    "bio": "Specialized in Physics and Engineering concepts. Passionate about making complex topics simple.",
+    "profileImage": "assets/tutor2.jpg"
+  },
+  {
+    "_id": "3",
+    "name": "Ms. Emily Davis",
+    "email": "emily.davis@skillsync.com", 
+    "subject": "Computer Science",
+    "experience": 5,
+    "rating": 4.9,
+    "bio": "Full-stack developer and coding instructor. Expert in JavaScript, Python, and Web Development.",
+    "profileImage": "assets/tutor3.jpg"
+  }
+]

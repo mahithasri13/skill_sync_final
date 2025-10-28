@@ -1,0 +1,117 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Book Tutoring Session</h2>
+      <button class="close-btn" (click)="onClose()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="tutor-info">
+        <div class="tutor-avatar">
+          <img [src]="tutor.avatar || 'https://ui-avatars.com/api/?name=' + tutor.name + '&background=667eea&color=fff'" [alt]="tutor.name">
+        </div>
+        <div class="tutor-details">
+          <h3>{{ tutor.name }}</h3>
+          <p class="tutor-subjects">{{ tutor.profile?.subjects?.join(', ') }}</p>
+          <p class="tutor-rate">₹{{ tutor.profile?.hourlyRate }}/hour</p>
+        </div>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" class="booking-form">
+        <div class="form-group">
+          <label for="course">Select Course</label>
+          <select 
+            id="course"
+            class="form-control"
+            [(ngModel)]="bookingData.course" 
+            name="course"
+            required>
+            <option value="">Choose a course...</option>
+            <option *ngFor="let course of courses" [value]="course">
+              {{ course }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="date">Session Date</label>
+            <input 
+              type="date" 
+              id="date"
+              class="form-control"
+              [(ngModel)]="bookingData.date" 
+              name="date"
+              [min]="getMinDate()"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="time">Start Time</label>
+            <select 
+              id="time"
+              class="form-control"
+              [(ngModel)]="bookingData.time" 
+              name="time"
+              required>
+              <option value="">Select time...</option>
+              <option *ngFor="let slot of timeSlots" [value]="slot">
+                {{ slot }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="duration">Session Duration</label>
+          <select 
+            id="duration"
+            class="form-control"
+            [(ngModel)]="bookingData.duration" 
+            name="duration">
+            <option value="30">30 minutes</option>
+            <option value="60">1 hour</option>
+            <option value="90">1.5 hours</option>
+            <option value="120">2 hours</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="notes">Additional Notes (Optional)</label>
+          <textarea 
+            id="notes"
+            class="form-control"
+            [(ngModel)]="bookingData.notes" 
+            name="notes"
+            rows="3"
+            placeholder="Any specific topics you want to focus on..."></textarea>
+        </div>
+
+        <div class="price-summary">
+          <div class="price-item">
+            <span>Session Fee ({{ bookingData.duration }} minutes)</span>
+            <span>₹{{ calculatePrice() }}</span>
+          </div>
+          <div class="price-total">
+            <strong>Total Amount</strong>
+            <strong>₹{{ calculatePrice() }}</strong>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline" (click)="onClose()">
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="!isFormValid()">
+            Confirm Booking
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

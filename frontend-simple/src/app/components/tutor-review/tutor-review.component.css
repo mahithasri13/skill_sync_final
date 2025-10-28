@@ -1,0 +1,25 @@
+.tutor-review-page .container {
+  max-width: 1000px;
+  margin: 24px auto;
+  padding: 0 12px;
+}
+.tutor-review-page .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.tutor-review-page .content {
+  display: flex;
+  gap: 20px;
+}
+.tutor-review-page .left { flex: 1 1 320px; }
+.tutor-review-page .right { flex: 1 1 640px; }
+.form-group { margin-bottom: 12px; }
+.form-control { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+.review-card { border: 1px solid #eee; padding: 12px; border-radius: 6px; margin-bottom: 10px; }
+.review-head { display:flex; align-items:center; gap:12px; }
+.student-avatar { width:40px; height:40px; background:#007bff; color:white; display:flex; align-items:center; justify-content:center; border-radius:50%; font-weight:600; }
+.student-info .meta { color:#666; font-size:12px; }
+.delete { margin-left:auto; }
+.btn { cursor:pointer; }

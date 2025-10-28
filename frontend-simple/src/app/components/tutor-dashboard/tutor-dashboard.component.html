@@ -1,0 +1,457 @@
+<div class="tutor-dashboard">
+  <!-- Navigation Header -->
+  <app-navbar></app-navbar>
+
+  <div class="dashboard-container">
+    <div class="container-fluid">
+      <!-- Welcome Section -->
+      <div class="welcome-section">
+        <div class="welcome-card">
+          <div class="welcome-content">
+            <div class="welcome-text">
+              <h1>Welcome back, {{ currentUser?.name }}! 👋</h1>
+              <p>Manage your tutoring sessions and help students achieve their goals</p>
+            </div>
+            <div class="profile-completion" *ngIf="stats.profileCompletion < 100">
+              <div class="completion-header">
+                <span>Profile Completion</span>
+                <strong>{{ stats.profileCompletion }}%</strong>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="stats.profileCompletion"></div>
+              </div>
+              <small>Complete your profile to get more students</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-section">
+        <div class="loading-content">
+          <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+          </div>
+          <p>Loading your dashboard...</p>
+        </div>
+      </div>
+
+      <!-- Dashboard Content -->
+      <div *ngIf="!isLoading" class="dashboard-content">
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon total-students">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ stats.totalStudents }}</h3>
+              <span>Total Students</span>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon pending-sessions">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ stats.pendingSessions }}</h3>
+              <span>Pending Sessions</span>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon confirmed-sessions">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-info">
+              <h3>{{ stats.confirmedSessions }}</h3>
+              <span>Confirmed Sessions</span>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon earnings">
+              <i class="fas fa-rupee-sign"></i>
+            </div>
+            <div class="stat-info">
+              <h3>₹{{ stats.totalEarnings }}</h3>
+              <span>Total Earnings</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="dashboard-tabs">
+          <nav class="tab-navigation">
+            <button 
+              class="tab-btn" 
+              [class.active]="activeTab === 'overview'"
+              (click)="setActiveTab('overview')">
+              <i class="fas fa-chart-line"></i>
+              Overview
+            </button>
+            <button 
+              class="tab-btn" 
+              [class.active]="activeTab === 'bookings'"
+              (click)="setActiveTab('bookings')">
+              <i class="fas fa-calendar-alt"></i>
+              My Bookings
+              <span class="badge" *ngIf="stats.pendingSessions > 0">{{ stats.pendingSessions }}</span>
+            </button>
+            <button 
+              class="tab-btn" 
+              [class.active]="activeTab === 'profile'"
+              (click)="setActiveTab('profile')">
+              <i class="fas fa-user-edit"></i>
+              Edit Profile
+            </button>
+            <button 
+              class="tab-btn" 
+              [class.active]="activeTab === 'schedule'"
+              (click)="setActiveTab('schedule')">
+              <i class="fas fa-clock"></i>
+              My Schedule
+            </button>
+          </nav>
+
+          <!-- Tab Content -->
+          <div class="tab-content">
+            
+            <!-- OVERVIEW TAB -->
+            <div *ngIf="activeTab === 'overview'" class="tab-pane">
+              <div class="pane-header">
+                <h2>Dashboard Overview</h2>
+                <p>Quick overview of your tutoring activities</p>
+              </div>
+
+              <div class="overview-content">
+                <!-- Recent Bookings -->
+                <div class="overview-card">
+                  <div class="card-header">
+                    <h3>Recent Bookings</h3>
+                    <a href="#" (click)="setActiveTab('bookings'); $event.preventDefault()">View All</a>
+                  </div>
+                  <div class="bookings-list">
+                    <div *ngFor="let booking of getRecentBookings()" class="booking-item">
+                      <div class="booking-info">
+                        <div class="student-avatar">
+                          {{ booking.student?.name?.charAt(0) || 'S' }}
+                        </div>
+                        <div class="booking-details">
+                          <h4>{{ booking.course }}</h4>
+                          <p>{{ booking.student?.name }} • {{ booking.scheduledDate | date }}</p>
+                        </div>
+                      </div>
+                      <div class="booking-status">
+                        <span [class]="'status ' + getStatusClass(booking.status)">
+                          {{ booking.status }}
+                        </span>
+                      </div>
+                    </div>
+                    <div *ngIf="getRecentBookings().length === 0" class="empty-state">
+                      <i class="fas fa-calendar-times"></i>
+                      <p>No recent bookings</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="overview-card">
+                  <div class="card-header">
+                    <h3>Quick Actions</h3>
+                  </div>
+                  <div class="quick-actions">
+                    <button class="action-btn" (click)="setActiveTab('profile')">
+                      <i class="fas fa-user-edit"></i>
+                      Update Profile
+                    </button>
+                    <button class="action-btn" (click)="setActiveTab('schedule')">
+                      <i class="fas fa-clock"></i>
+                      Set Availability
+                    </button>
+                    <button class="action-btn" [routerLink]="['/tutor/reviews']">
+                      <i class="fas fa-star"></i>
+                      Reviews
+                    </button>
+                    <button class="action-btn" *ngIf="stats.pendingSessions > 0" (click)="setActiveTab('bookings')">
+                      <i class="fas fa-check-circle"></i>
+                      Review Bookings
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- BOOKINGS TAB -->
+            <div *ngIf="activeTab === 'bookings'" class="tab-pane">
+              <div class="pane-header">
+                <h2>Manage Bookings</h2>
+                <p>Review and manage your tutoring sessions</p>
+              </div>
+
+              <div class="bookings-content">
+                <div *ngIf="scheduledClasses.length === 0" class="empty-bookings">
+                  <div class="empty-icon">
+                    <i class="fas fa-calendar-plus"></i>
+                  </div>
+                  <h3>No bookings yet</h3>
+                  <p>Your upcoming sessions will appear here when students book with you</p>
+                  <button class="btn btn-primary" (click)="setActiveTab('profile')">
+                    Complete Your Profile
+                  </button>
+                </div>
+
+                <div *ngIf="scheduledClasses.length > 0" class="bookings-grid">
+                  <div *ngFor="let booking of scheduledClasses" class="booking-card">
+                    <div class="booking-header">
+                      <div class="booking-title">
+                        <h3>{{ booking.course }}</h3>
+                        <div class="student-info">
+                          <div class="student-avatar small">
+                            {{ booking.student?.name?.charAt(0) || 'S' }}
+                          </div>
+                          <span>{{ booking.student?.name }}</span>
+                        </div>
+                      </div>
+                      <span [class]="'status ' + getStatusClass(booking.status)">
+                        {{ booking.status }}
+                      </span>
+                    </div>
+
+                    <div class="booking-details">
+                      <div class="detail">
+                        <i class="fas fa-calendar"></i>
+                        <span>{{ booking.scheduledDate | date:'fullDate' }}</span>
+                      </div>
+                      <div class="detail">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ booking.startTime }} ({{ booking.duration }} mins)</span>
+                      </div>
+                      <div class="detail">
+                        <i class="fas fa-rupee-sign"></i>
+                        <span>₹{{ booking.price }}</span>
+                      </div>
+                      <div class="detail" *ngIf="booking.notes">
+                        <i class="fas fa-sticky-note"></i>
+                        <span>{{ booking.notes }}</span>
+                      </div>
+                    </div>
+
+                    <div class="booking-actions">
+                      <div class="action-buttons">
+                        <button 
+                          *ngIf="booking.status === 'pending'" 
+                          class="btn btn-success"
+                          (click)="confirmBooking(booking._id)">
+                          <i class="fas fa-check"></i>
+                          Confirm
+                        </button>
+                        <button 
+                          *ngIf="booking.status === 'confirmed'" 
+                          class="btn btn-primary"
+                          (click)="generateMeetingLink(booking._id)">
+                          <i class="fas fa-video"></i>
+                          Meeting Link
+                        </button>
+                        <button 
+                          *ngIf="booking.status === 'confirmed'" 
+                          class="btn btn-complete"
+                          (click)="completeSession(booking._id)">
+                          <i class="fas fa-flag-checkered"></i>
+                          Complete
+                        </button>
+                        <button 
+                          *ngIf="booking.status !== 'completed' && booking.status !== 'cancelled'" 
+                          class="btn btn-outline"
+                          (click)="cancelBooking(booking._id)">
+                          <i class="fas fa-times"></i>
+                          Cancel
+                        </button>
+                      </div>
+                      <div class="meeting-link" *ngIf="booking.meetingLink">
+                        <a [href]="booking.meetingLink" target="_blank" class="link-btn">
+                          <i class="fas fa-external-link-alt"></i>
+                          Join Meeting
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PROFILE TAB -->
+            <div *ngIf="activeTab === 'profile'" class="tab-pane">
+              <div class="pane-header">
+                <h2>Edit Your Profile</h2>
+                <p>Update your teaching profile to attract more students</p>
+              </div>
+
+              <div class="profile-form">
+                <!-- Basic Information -->
+                <div class="form-section">
+                  <h3>Basic Information</h3>
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label>Bio</label>
+                      <textarea 
+                        class="form-control" 
+                        [(ngModel)]="tutorProfile.bio" 
+                        rows="4" 
+                        placeholder="Tell students about your teaching style, experience, and what makes you a great tutor..."></textarea>
+                      <small>This is your chance to make a great first impression!</small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Education & Experience -->
+                <div class="form-section">
+                  <h3>Education & Experience</h3>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>Education</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        [(ngModel)]="tutorProfile.education" 
+                        placeholder="e.g., B.Tech Computer Science - IIT Delhi">
+                    </div>
+                    <div class="form-group">
+                      <label>Teaching Experience</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        [(ngModel)]="tutorProfile.experience" 
+                        placeholder="e.g., 5 years of teaching experience">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Pricing & Expertise -->
+                <div class="form-section">
+                  <h3>Pricing & Expertise</h3>
+                  <div class="form-grid-2">
+                    <div class="form-group">
+                      <label>Hourly Rate (₹)</label>
+                      <input 
+                        type="number" 
+                        class="form-control" 
+                        [(ngModel)]="tutorProfile.hourlyRate" 
+                        min="100" 
+                        max="5000"
+                        placeholder="500">
+                      <small>Set a competitive rate for your services</small>
+                    </div>
+                    <div class="form-group">
+                      <label>Expertise Level</label>
+                      <select class="form-control" [(ngModel)]="tutorProfile.expertiseLevel">
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Expert">Expert</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Subjects -->
+                <div class="form-section">
+                  <h3>Subjects You Teach</h3>
+                  <div class="form-group">
+                    <label>Add Subjects</label>
+                    <div class="input-with-button">
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        [(ngModel)]="newSubject" 
+                        placeholder="e.g., Mathematics, Physics, Web Development..."
+                        (keyup.enter)="addSubject()">
+                      <button class="btn btn-primary" (click)="addSubject()">Add</button>
+                    </div>
+                    <div class="tags-container">
+                      <span *ngFor="let subject of tutorProfile.subjects; let i = index" class="tag">
+                        {{ subject }}
+                        <button class="tag-remove" (click)="removeSubject(i)">×</button>
+                      </span>
+                      <div *ngIf="tutorProfile.subjects.length === 0" class="no-tags">
+                        No subjects added yet. Add the subjects you're comfortable teaching.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Teaching Style -->
+                <div class="form-section">
+                  <h3>Teaching Style</h3>
+                  <div class="form-group">
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      [(ngModel)]="tutorProfile.teachingStyle" 
+                      placeholder="e.g., Interactive, Theory-focused, Practical examples, Problem-solving approach">
+                    <small>Describe your teaching methodology</small>
+                  </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                  <button class="btn btn-secondary" (click)="setActiveTab('overview')">
+                    Cancel
+                  </button>
+                  <button class="btn btn-primary" (click)="saveProfile()" [disabled]="isLoading">
+                    <i class="fas fa-save" *ngIf="!isLoading"></i>
+                    <i class="fas fa-spinner fa-spin" *ngIf="isLoading"></i>
+                    {{ isLoading ? 'Saving...' : 'Save Profile' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- SCHEDULE TAB -->
+            <div *ngIf="activeTab === 'schedule'" class="tab-pane">
+              <div class="pane-header">
+                <h2>Your Availability</h2>
+                <p>Set your weekly schedule for tutoring sessions</p>
+              </div>
+
+              <div class="schedule-content">
+                <div class="schedule-instructions">
+                  <p>Click on time slots to mark your availability. Students can only book sessions during these times.</p>
+                </div>
+
+                <div class="availability-grid">
+                  <div class="time-header">
+                    <div class="time-label">Time</div>
+                    <div *ngFor="let day of days" class="day-header">{{ day }}</div>
+                  </div>
+                  
+                  <div *ngFor="let slot of timeSlots" class="time-row">
+                    <div class="time-slot-label">{{ slot }}</div>
+                    <div *ngFor="let day of days" 
+                         class="time-cell"
+                         [class.selected]="isSlotSelected(day, slot)"
+                         (click)="toggleAvailability(day, slot)">
+                      <i class="fas fa-check" *ngIf="isSlotSelected(day, slot)"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="availability-summary">
+                  <h4>Your Available Hours</h4>
+                  <div *ngIf="tutorProfile.availability.length === 0" class="no-availability">
+                    No availability set. Click on the grid above to mark your available times.
+                  </div>
+                  <div *ngFor="let day of tutorProfile.availability" class="day-summary">
+                    <strong>{{ day.day }}:</strong> 
+                    {{ day.slots.join(', ') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
