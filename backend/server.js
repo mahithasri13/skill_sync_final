@@ -59,3 +59,13 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 SkillSync backend running on http://localhost:${PORT}`);
 });
+
+const path = require('path');
+
+// Serve the Angular frontend
+app.use(express.static(path.join(__dirname, 'dist/frontend-simple')));
+
+// Catch-all route to send index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist/frontend-simple', 'index.html'));
+});
