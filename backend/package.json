@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "build": "cd ../frontend-simple && npx ng build --configuration production"
     "dev": "nodemon server.js",
     "seed": "node seedData.js"
   },
