@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
+import { environment } from '../../environments/environment';  // ✅ ADD THIS IMPORT
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ import { BehaviorSubject } from 'rxjs';
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<any>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
-  private apiUrl = 'http://localhost:3000/api';
+  private apiUrl = environment.apiUrl + '/api';  // ✅ CHANGED THIS LINE
 
   constructor(private http: HttpClient, private router: Router) {
     this.loadUserFromStorage();
