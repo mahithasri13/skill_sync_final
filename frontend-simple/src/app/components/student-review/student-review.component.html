@@ -1,0 +1,38 @@
+<div class="student-review">
+  <h3>Write a Review</h3>
+
+  <div *ngIf="isLoading">Loading your bookings...</div>
+
+  <div *ngIf="!isLoading">
+    <div *ngIf="bookings.length === 0">You have no bookings to review yet.</div>
+
+    <div class="booking-list">
+      <div *ngFor="let b of bookings" class="booking-item">
+        <div class="booking-info">
+          <img [src]="b.tutor?.avatar || 'https://ui-avatars.com/api/?name=' + b.tutor?.name + '&background=667eea&color=fff'" alt="tutor"/>
+          <div>
+            <strong>{{ b.tutor?.name }}</strong>
+            <div>{{ b.course }} • {{ b.scheduledDate | date }}</div>
+          </div>
+        </div>
+        <div class="booking-actions">
+          <button class="btn" (click)="selectBooking(b)">Review</button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="selectedBooking" class="review-form">
+      <h4>Review for {{ selectedBooking.tutor?.name }}</h4>
+      <label>Rating</label>
+      <select [(ngModel)]="rating">
+        <option *ngFor="let r of [5,4,3,2,1]" [value]="r">{{ r }}</option>
+      </select>
+      <label>Comment</label>
+      <textarea [(ngModel)]="comment" rows="4"></textarea>
+      <div>
+        <button class="btn btn-primary" (click)="submitReview()">Submit</button>
+        <button class="btn" (click)="selectedBooking = null">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+.student-review { padding: 12px; }
+.booking-list { display:flex; flex-direction:column; gap:10px; margin-bottom:12px; }
+.booking-item { display:flex; align-items:center; justify-content:space-between; padding:8px; border:1px solid #eee; border-radius:6px; }
+.booking-info { display:flex; gap:8px; align-items:center; }
+.booking-info img { width:48px; height:48px; border-radius:50%; }
+.review-form { margin-top:12px; border-top:1px solid #f1f1f1; padding-top:12px; }
+.btn { padding:6px 10px; border-radius:4px; cursor:pointer; }
+.btn-primary { background:#007bff; color:#fff; border:none; }

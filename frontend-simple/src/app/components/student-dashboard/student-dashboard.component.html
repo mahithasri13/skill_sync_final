@@ -1,0 +1,417 @@
+<div class="student-dashboard">
+  <!-- Navigation Header -->
+  <app-navbar></app-navbar>
+
+  <div class="dashboard-container">
+    <div class="container-fluid">
+      <!-- Welcome Section -->
+      <div class="welcome-section">
+        <div class="welcome-card">
+          <div class="welcome-content">
+            <div class="welcome-text">
+              <h1>Hello, {{ currentUser?.name }}! 🎓</h1>
+              <p>Discover expert tutors and accelerate your learning journey</p>
+            </div>
+            <div class="quick-stats">
+              <div class="stat-item">
+                <strong>{{ stats.totalBookings }}</strong>
+                <span>Total Sessions</span>
+              </div>
+              <div class="stat-item">
+                <strong>{{ stats.upcomingSessions }}</strong>
+                <span>Upcoming</span>
+              </div>
+              <div class="stat-item">
+                <strong>{{ stats.completedSessions }}</strong>
+                <span>Completed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-section">
+        <div class="loading-content">
+          <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+          </div>
+          <p>Finding the best tutors for you...</p>
+        </div>
+      </div>
+
+      <!-- Dashboard Content -->
+      <div *ngIf="!isLoading" class="dashboard-content">
+        <!-- Navigation Tabs -->
+        <div class="dashboard-tabs">
+          <nav class="tab-navigation">
+            <button 
+              class="tab-btn" 
+              [class.active]="activeTab === 'discover'"
+              (click)="setActiveTab('discover')">
+              <i class="fas fa-search"></i>
+              Discover Tutors
+            </button>
+            <button 
+              class="tab-btn" 
+              [class.active]="activeTab === 'bookings'"
+              (click)="setActiveTab('bookings')">
+              <i class="fas fa-calendar-alt"></i>
+              My Bookings
+              <span class="badge" *ngIf="stats.upcomingSessions > 0">{{ stats.upcomingSessions }}</span>
+            </button>
+            <button 
+              class="tab-btn" 
+              [class.active]="activeTab === 'upcoming'"
+              (click)="setActiveTab('upcoming')">
+              <i class="fas fa-clock"></i>
+              Upcoming Sessions
+            </button>
+            <button 
+              class="tab-btn"
+              [class.active]="activeTab === 'reviews'"
+              (click)="setActiveTab('reviews')">
+              <i class="fas fa-star"></i>
+              Reviews
+            </button>
+          </nav>
+
+          <!-- Tab Content -->
+          <div class="tab-content">
+            
+            <!-- DISCOVER TUTORS TAB -->
+            <div *ngIf="activeTab === 'discover'" class="tab-pane">
+              <div class="pane-header">
+                <h2>Find Your Perfect Tutor</h2>
+                <p>Connect with expert tutors across various subjects</p>
+              </div>
+
+              <!-- Search and Filters -->
+              <div class="search-section">
+                <div class="search-header">
+                  <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input 
+                      type="text" 
+                      placeholder="Search by subject, topic, or tutor name..."
+                      [(ngModel)]="searchFilters.subject"
+                      (keyup.enter)="searchTutors()">
+                    <button class="btn btn-primary" (click)="searchTutors()">
+                      Search
+                    </button>
+                  </div>
+                  <button class="btn btn-outline" (click)="clearFilters()">
+                    Clear Filters
+                  </button>
+                </div>
+
+                <!-- Quick Subject Filters -->
+                <div class="quick-filters">
+                  <h4>Popular Subjects:</h4>
+                  <div class="subject-tags">
+                    <button 
+                      *ngFor="let subject of popularSubjects" 
+                      class="subject-tag"
+                      (click)="quickFilter(subject)">
+                      {{ subject }}
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Advanced Filters -->
+                <div class="advanced-filters">
+                  <div class="filter-grid">
+                    <div class="filter-group">
+                      <label>Price Range (₹/hr)</label>
+                      <div class="price-range">
+                        <input 
+                          type="number" 
+                          placeholder="Min" 
+                          [(ngModel)]="searchFilters.minRate">
+                        <span>to</span>
+                        <input 
+                          type="number" 
+                          placeholder="Max" 
+                          [(ngModel)]="searchFilters.maxRate">
+                      </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                      <label>Expertise Level</label>
+                      <select [(ngModel)]="searchFilters.expertise">
+                        <option value="">Any Level</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Expert">Expert</option>
+                      </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                      <label>Availability</label>
+                      <select [(ngModel)]="searchFilters.availability">
+                        <option value="">Any Day</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                      </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                      <button class="btn btn-primary apply-filters" (click)="searchTutors()">
+                        Apply Filters
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tutors Grid -->
+              <div class="tutors-section">
+                <div class="section-header">
+                  <h3>Available Tutors ({{ tutors.length }})</h3>
+                  <p>Book a session with qualified tutors</p>
+                </div>
+
+                <div *ngIf="tutors.length === 0" class="empty-tutors">
+                  <div class="empty-icon">
+                    <i class="fas fa-user-graduate"></i>
+                  </div>
+                  <h4>No tutors found</h4>
+                  <p>Try adjusting your search criteria or browse all tutors</p>
+                  <button class="btn btn-primary" (click)="clearFilters()">
+                    Show All Tutors
+                  </button>
+                </div>
+
+                <div *ngIf="tutors.length > 0" class="tutors-grid">
+                  <div *ngFor="let tutor of tutors" class="tutor-card">
+                    <div class="tutor-header">
+                      <div class="tutor-avatar">
+                        <img [src]="tutor.avatar || 'https://ui-avatars.com/api/?name=' + tutor.name + '&background=667eea&color=fff'" 
+                             [alt]="tutor.name">
+                        <div class="online-indicator" [class.online]="true"></div>
+                      </div>
+                      <div class="tutor-info">
+                        <h3>{{ tutor.name }}</h3>
+                        <div class="tutor-meta">
+                          <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <span>{{ getTutorRating(tutor) }}</span>
+                            <span class="reviews">({{ tutor.profile?.totalReviews || 12 }}+ reviews)</span>
+                          </div>
+                          <div class="experience">
+                            <i class="fas fa-award"></i>
+                            <span>{{ getTutorExperience(tutor) }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="tutor-bio">
+                      <p>{{ tutor.profile?.bio || 'Passionate educator dedicated to student success' }}</p>
+                    </div>
+
+                    <div class="tutor-subjects">
+                      <span *ngFor="let subject of tutor.profile?.subjects?.slice(0, 3)" 
+                            class="subject-tag small">
+                        {{ subject }}
+                      </span>
+                      <span *ngIf="(tutor.profile?.subjects?.length || 0) > 3" class="more-subjects">
+                        +{{ (tutor.profile?.subjects?.length || 0) - 3 }} more
+                      </span>
+                    </div>
+
+                    <div class="tutor-details">
+                      <div class="detail">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>{{ tutor.profile?.education || 'Qualified Educator' }}</span>
+                      </div>
+                      <div class="detail">
+                        <i class="fas fa-clock"></i>
+                        <span>Available {{ getNextAvailableSlot(tutor) }}</span>
+                      </div>
+                      <div class="detail">
+                        <i class="fas fa-language"></i>
+                        <span>{{ tutor.profile?.languages?.join(', ') || 'English' }}</span>
+                      </div>
+                    </div>
+
+                    <div class="tutor-footer">
+                      <div class="pricing">
+                        <strong>₹{{ tutor.profile?.hourlyRate || 300 }}/hour</strong>
+                        <span class="level-badge" [class]="'level-' + (tutor.profile?.expertiseLevel?.toLowerCase() || 'intermediate')">
+                          {{ tutor.profile?.expertiseLevel || 'Intermediate' }}
+                        </span>
+                      </div>
+                      <button class="btn btn-primary book-btn" (click)="openBookingModal(tutor)">
+                        <i class="fas fa-calendar-plus"></i>
+                        Book Session
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- MY BOOKINGS TAB -->
+            <div *ngIf="activeTab === 'bookings'" class="tab-pane">
+              <div class="pane-header">
+                <h2>Your Learning Sessions</h2>
+                <p>Manage and track all your tutoring sessions</p>
+              </div>
+
+              <div class="bookings-content">
+                <div *ngIf="bookings.length === 0" class="empty-bookings">
+                  <div class="empty-icon">
+                    <i class="fas fa-calendar-plus"></i>
+                  </div>
+                  <h3>No bookings yet</h3>
+                  <p>Start your learning journey by booking your first session with a tutor</p>
+                  <button class="btn btn-primary" (click)="setActiveTab('discover')">
+                    Find Tutors
+                  </button>
+                </div>
+
+                <div *ngIf="bookings.length > 0" class="bookings-list">
+                  <div *ngFor="let booking of bookings" class="booking-card">
+                    <div class="booking-header">
+                      <div class="booking-info">
+                        <div class="tutor-avatar small">
+                          <img [src]="booking.tutor?.avatar || 'https://ui-avatars.com/api/?name=' + booking.tutor?.name + '&background=667eea&color=fff'" 
+                               [alt]="booking.tutor?.name">
+                        </div>
+                        <div class="booking-details">
+                          <h3>{{ booking.course }}</h3>
+                          <p>with {{ booking.tutor?.name }}</p>
+                          <div class="booking-meta">
+                            <span class="date">
+                              <i class="fas fa-calendar"></i>
+                              {{ booking.scheduledDate | date:'fullDate' }}
+                            </span>
+                            <span class="time">
+                              <i class="fas fa-clock"></i>
+                              {{ booking.startTime }} ({{ booking.duration }} mins)
+                            </span>
+                            <span class="price">
+                              <i class="fas fa-rupee-sign"></i>
+                              ₹{{ booking.price }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="booking-status">
+                        <span [class]="'status ' + getStatusClass(booking.status)">
+                          {{ booking.status }}
+                        </span>
+                        <div class="booking-actions">
+                          <button 
+                            *ngIf="booking.status === 'confirmed' && booking.meetingLink" 
+                            class="btn btn-success join-btn"
+                            (click)="joinMeeting(booking)">
+                            <i class="fas fa-video"></i>
+                            Join Meeting
+                          </button>
+                          <button 
+                            *ngIf="booking.status === 'pending'" 
+                            class="btn btn-outline cancel-btn"
+                            (click)="cancelBooking(booking._id)">
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div *ngIf="booking.notes" class="booking-notes">
+                      <strong>Notes:</strong> {{ booking.notes }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- UPCOMING SESSIONS TAB -->
+            <div *ngIf="activeTab === 'upcoming'" class="tab-pane">
+              <div class="pane-header">
+                <h2>Upcoming Sessions</h2>
+                <p>Your confirmed and pending tutoring sessions</p>
+              </div>
+
+              <div class="upcoming-content">
+                <div *ngIf="getUpcomingBookings().length === 0" class="empty-upcoming">
+                  <div class="empty-icon">
+                    <i class="fas fa-clock"></i>
+                  </div>
+                  <h3>No upcoming sessions</h3>
+                  <p>Book a session with a tutor to get started</p>
+                  <button class="btn btn-primary" (click)="setActiveTab('discover')">
+                    Browse Tutors
+                  </button>
+                </div>
+
+                <div *ngIf="getUpcomingBookings().length > 0" class="upcoming-grid">
+                  <div *ngFor="let booking of getUpcomingBookings()" class="upcoming-card">
+                    <div class="session-date">
+                      <div class="date-badge">
+                        <strong>{{ booking.scheduledDate | date:'d' }}</strong>
+                        <span>{{ booking.scheduledDate | date:'MMM' }}</span>
+                      </div>
+                    </div>
+                    
+                    <div class="session-info">
+                      <h4>{{ booking.course }}</h4>
+                      <p class="tutor-name">with {{ booking.tutor?.name }}</p>
+                      <div class="session-time">
+                        <i class="fas fa-clock"></i>
+                        {{ booking.startTime }} • {{ booking.duration }} minutes
+                      </div>
+                    </div>
+
+                    <div class="session-actions">
+                      <span [class]="'status ' + getStatusClass(booking.status)">
+                        {{ booking.status }}
+                      </span>
+                      <button 
+                        *ngIf="booking.status === 'confirmed' && booking.meetingLink" 
+                        class="btn btn-primary join-btn"
+                        (click)="joinMeeting(booking)">
+                        Join Now
+                      </button>
+                      <button 
+                        *ngIf="booking.status === 'pending'" 
+                        class="btn btn-outline"
+                        (click)="cancelBooking(booking._id)">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- REVIEWS TAB -->
+            <div *ngIf="activeTab === 'reviews'" class="tab-pane">
+              <div class="pane-header">
+                <h2>Your Reviews</h2>
+                <p>Leave feedback for tutors you've booked</p>
+              </div>
+              <app-student-review></app-student-review>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Booking Modal -->
+<app-booking-modal 
+  *ngIf="showBookingModal"
+  [tutor]="selectedTutor"
+  (book)="bookTutor($event)"
+  (close)="showBookingModal = false">
+</app-booking-modal>

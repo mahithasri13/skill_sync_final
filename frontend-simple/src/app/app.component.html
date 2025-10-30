@@ -1,0 +1,28 @@
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/">
+      <strong>Skillsync - Learning Platform</strong>
+    </a>
+    
+    <div class="navbar-nav ms-auto">
+      <a class="nav-link" routerLink="/login" *ngIf="!isLoggedIn()">Go to Login</a>
+      <a class="nav-link" routerLink="/student-dashboard" *ngIf="isStudent()">Student Dashboard</a>
+      <a class="nav-link" routerLink="/tutor-dashboard" *ngIf="isTutor()">Tutor Dashboard</a>
+      <a class="nav-link" routerLink="/tutors">Tutors</a>
+      <a class="nav-link" href="#" *ngIf="isLoggedIn()" (click)="logout()">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main-content">
+  <router-outlet></router-outlet>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-3 mt-5">
+  <div class="container">
+    <p>&copy; 2024 Skillsync - Learning Platform. All rights reserved.</p>
+  </div>
+</footer>

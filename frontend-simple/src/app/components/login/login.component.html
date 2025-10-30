@@ -1,0 +1,188 @@
+<div class="login-container">
+  <div class="login-background">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="logo-section">
+          <div class="logo">
+            <i class="fas fa-graduation-cap"></i>
+            <h1>SkillSync</h1>
+          </div>
+          <p class="tagline">Connect with expert tutors. Learn without limits.</p>
+        </div>
+      </div>
+
+      <!-- Quick Demo Access -->
+      <div class="demo-section">
+        <h3>Quick Access</h3>
+        <div class="demo-buttons">
+          <button class="demo-btn student-demo" (click)="loginAsStudent()">
+            <div class="demo-icon">
+              <i class="fas fa-user-graduate"></i>
+            </div>
+            <div class="demo-info">
+              <strong>Login as Student</strong>
+              <span>Explore tutors & book sessions</span>
+            </div>
+          </button>
+          <button class="demo-btn tutor-demo" (click)="loginAsTutor()">
+            <div class="demo-icon">
+              <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <div class="demo-info">
+              <strong>Login as Tutor</strong>
+              <span>Manage your tutoring profile</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div class="auth-section">
+        <div class="auth-tabs">
+          <button 
+  class="auth-tab" 
+  [class.active]="isLoginMode"
+  (click)="switchMode()">
+  Sign In
+</button>
+<button 
+  class="auth-tab" 
+  [class.active]="!isLoginMode"
+  (click)="switchMode()">
+  Create Account
+</button>
+        </div>
+
+        <div class="auth-form">
+          <h2>{{ isLoginMode ? 'Welcome Back!' : 'Join SkillSync Today' }}</h2>
+          <p class="form-subtitle">
+            {{ isLoginMode ? 'Sign in to continue your learning journey' : 'Create your account to get started' }}
+          </p>
+          
+          <div *ngIf="error" class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            {{ error }}
+          </div>
+
+          <form (ngSubmit)="isLoginMode ? onLogin() : onRegister()">
+            <!-- Registration Fields -->
+            <div *ngIf="!isLoginMode" class="form-group">
+              <label for="name">Full Name</label>
+              <div class="input-with-icon">
+                <i class="fas fa-user"></i>
+                <input 
+                  type="text" 
+                  id="name"
+                  class="form-control"
+                  [(ngModel)]="registerData.name" 
+                  name="name"
+                  placeholder="Enter your full name"
+                  required>
+              </div>
+            </div>
+
+            <!-- Email Field -->
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <div class="input-with-icon">
+                <i class="fas fa-envelope"></i>
+                <input 
+                  type="email" 
+                  id="email"
+                  class="form-control"
+                  [(ngModel)]="isLoginMode ? loginData.email : registerData.email" 
+                  [name]="isLoginMode ? 'loginEmail' : 'regEmail'"
+                  placeholder="your.email@example.com"
+                  required>
+              </div>
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-group">
+              <label for="password">Password</label>
+              <div class="input-with-icon">
+                <i class="fas fa-lock"></i>
+                <input 
+                  type="password" 
+                  id="password"
+                  class="form-control"
+                  [(ngModel)]="isLoginMode ? loginData.password : registerData.password" 
+                  [name]="isLoginMode ? 'loginPassword' : 'regPassword'"
+                  placeholder="Enter your password"
+                  required>
+              </div>
+            </div>
+
+            <!-- Confirm Password -->
+            <div *ngIf="!isLoginMode" class="form-group">
+              <label for="confirmPassword">Confirm Password</label>
+              <div class="input-with-icon">
+                <i class="fas fa-lock"></i>
+                <input 
+                  type="password" 
+                  id="confirmPassword"
+                  class="form-control"
+                  [(ngModel)]="registerData.confirmPassword" 
+                  name="confirmPassword"
+                  placeholder="Confirm your password"
+                  required>
+              </div>
+            </div>
+
+            <!-- Role Selection -->
+            <div class="form-group">
+              <label>I am a</label>
+              <div class="role-selection">
+                <label class="role-option">
+                  <input 
+                    type="radio" 
+                    name="role"
+                    [value]="'student'"
+                    [(ngModel)]="isLoginMode ? loginData.role : registerData.role">
+                  <div class="role-card">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Student</span>
+                    <small>Looking for tutors</small>
+                  </div>
+                </label>
+                <label class="role-option">
+                  <input 
+                    type="radio" 
+                    name="role"
+                    [value]="'tutor'"
+                    [(ngModel)]="isLoginMode ? loginData.role : registerData.role">
+                  <div class="role-card">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Tutor</span>
+                    <small>Ready to teach</small>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              class="btn btn-primary full-width"
+              [disabled]="isLoading">
+              <span *ngIf="isLoading">
+                <i class="fas fa-spinner fa-spin"></i> 
+                {{ isLoginMode ? 'Signing In...' : 'Creating Account...' }}
+              </span>
+              <span *ngIf="!isLoading">
+                {{ isLoginMode ? 'Sign In' : 'Create Account' }}
+              </span>
+            </button>
+          </form>
+
+          <div class="auth-footer">
+            <p>
+              {{ isLoginMode ? "Don't have an account?" : "Already have an account?" }}
+              <a href="#" (click)="switchMode(); $event.preventDefault()" class="auth-link">
+                {{ isLoginMode ? 'Sign up now' : 'Sign in here' }}
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
